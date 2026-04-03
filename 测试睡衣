@@ -1,0 +1,1083 @@
+[index.html](https://github.com/user-attachments/files/26460981/index.html)
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🌸 女书水印工具 · 清醒读书会</title>
+  <meta name="description" content="专为女性读书会打卡设计的隐私安全水印工具，图片仅在本地处理，不上传任何服务器。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --cream: #faf6f1;
+      --parchment: #f3ede4;
+      --blush: #e8d5cc;
+      --dusty-rose: #c9a99a;
+      --mauve: #b08b8b;
+      --warm-brown: #7a5c5c;
+      --deep-plum: #4a3040;
+      --sage: #9caa8e;
+      --sage-light: #c8d5be;
+      --mist: #d6dde8;
+      --lavender: #c4bdd6;
+      --gold: #c9a86c;
+      --gold-light: #e8d4a8;
+      --shadow: rgba(74, 48, 64, 0.12);
+      --shadow-hover: rgba(74, 48, 64, 0.22);
+      --text-primary: #3d2b2b;
+      --text-secondary: #7a5c5c;
+      --text-muted: #a08080;
+      --radius-sm: 8px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --radius-xl: 32px;
+      --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: var(--cream);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Background Decoration ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 40% at 10% 15%, rgba(201,169,154,0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 60% at 90% 80%, rgba(196,189,214,0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 30% at 50% 50%, rgba(156,170,142,0.08) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Privacy Banner ── */
+    .privacy-banner {
+      position: relative;
+      z-index: 10;
+      background: linear-gradient(135deg, var(--sage) 0%, var(--sage-light) 100%);
+      color: #fff;
+      text-align: center;
+      padding: 10px 20px;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    }
+
+    .privacy-banner span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ── Header ── */
+    header {
+      position: relative;
+      z-index: 5;
+      padding: 48px 24px 32px;
+      text-align: center;
+    }
+
+    .header-ornament {
+      font-size: 28px;
+      margin-bottom: 12px;
+      display: block;
+      animation: float 4s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    h1 {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(26px, 5vw, 38px);
+      font-weight: 600;
+      color: var(--deep-plum);
+      letter-spacing: 3px;
+      line-height: 1.3;
+    }
+
+    h1 em {
+      font-style: normal;
+      color: var(--mauve);
+    }
+
+    .header-sub {
+      margin-top: 10px;
+      font-size: 13px;
+      color: var(--text-muted);
+      letter-spacing: 1.5px;
+      font-weight: 300;
+    }
+
+    .header-divider {
+      width: 80px;
+      height: 1.5px;
+      background: linear-gradient(90deg, transparent, var(--dusty-rose), transparent);
+      margin: 20px auto 0;
+    }
+
+    /* ── Main Layout ── */
+    main {
+      position: relative;
+      z-index: 5;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+    @media (max-width: 860px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ── Card ── */
+    .card {
+      background: rgba(255,255,255,0.72);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.85);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      box-shadow: 0 4px 24px var(--shadow), 0 1px 3px rgba(255,255,255,0.8) inset;
+      transition: box-shadow var(--transition);
+    }
+
+    .card:hover {
+      box-shadow: 0 8px 40px var(--shadow-hover), 0 1px 3px rgba(255,255,255,0.8) inset;
+    }
+
+    .card-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--warm-brown);
+      letter-spacing: 2px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--blush), transparent);
+    }
+
+    /* ── Upload Zone ── */
+    .upload-zone {
+      border: 2px dashed var(--blush);
+      border-radius: var(--radius-md);
+      padding: 40px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all var(--transition);
+      background: rgba(250,246,241,0.6);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .upload-zone::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(201,169,154,0.08), rgba(196,189,214,0.08));
+      opacity: 0;
+      transition: opacity var(--transition);
+    }
+
+    .upload-zone:hover,
+    .upload-zone.dragover {
+      border-color: var(--dusty-rose);
+      background: rgba(232,213,204,0.2);
+      transform: translateY(-2px);
+    }
+
+    .upload-zone:hover::before,
+    .upload-zone.dragover::before {
+      opacity: 1;
+    }
+
+    .upload-icon {
+      font-size: 48px;
+      margin-bottom: 14px;
+      display: block;
+      transition: transform var(--transition);
+    }
+
+    .upload-zone:hover .upload-icon {
+      transform: scale(1.1);
+    }
+
+    .upload-text {
+      font-size: 15px;
+      color: var(--text-secondary);
+      letter-spacing: 0.5px;
+    }
+
+    .upload-hint {
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    #fileInput {
+      display: none;
+    }
+
+    /* ── Preview ── */
+    .preview-wrapper {
+      position: relative;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: var(--parchment);
+      min-height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #previewCanvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: var(--radius-md);
+      transition: opacity 0.4s ease;
+    }
+
+    .preview-placeholder {
+      padding: 40px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    .preview-placeholder .ph-icon {
+      font-size: 40px;
+      display: block;
+      margin-bottom: 10px;
+      opacity: 0.5;
+    }
+
+    /* ── Controls ── */
+    .controls-col {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    label {
+      font-size: 13px;
+      color: var(--text-secondary);
+      letter-spacing: 0.8px;
+      font-weight: 500;
+    }
+
+    textarea, input[type="text"] {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1.5px solid var(--blush);
+      border-radius: var(--radius-sm);
+      background: rgba(255,255,255,0.7);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 14px;
+      transition: all var(--transition);
+      resize: vertical;
+      outline: none;
+    }
+
+    textarea:focus, input[type="text"]:focus {
+      border-color: var(--dusty-rose);
+      background: rgba(255,255,255,0.95);
+      box-shadow: 0 0 0 3px rgba(201,169,154,0.18);
+    }
+
+    textarea {
+      min-height: 80px;
+      line-height: 1.6;
+    }
+
+    /* ── Slider Row ── */
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .slider-value {
+      min-width: 36px;
+      text-align: right;
+      font-size: 13px;
+      color: var(--mauve);
+      font-weight: 500;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      flex: 1;
+      height: 4px;
+      border-radius: 4px;
+      background: var(--blush);
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--dusty-rose);
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(176,139,139,0.4);
+      transition: all var(--transition);
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      background: var(--mauve);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--dusty-rose);
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 8px rgba(176,139,139,0.4);
+    }
+
+    /* ── Color Row ── */
+    .color-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .color-picker-wrapper {
+      position: relative;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 3px solid var(--blush);
+      cursor: pointer;
+      box-shadow: 0 2px 8px var(--shadow);
+      transition: all var(--transition);
+      flex-shrink: 0;
+    }
+
+    .color-picker-wrapper:hover {
+      transform: scale(1.1);
+      border-color: var(--dusty-rose);
+    }
+
+    input[type="color"] {
+      position: absolute;
+      inset: -8px;
+      width: calc(100% + 16px);
+      height: calc(100% + 16px);
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      opacity: 0.01;
+    }
+
+    .color-swatch {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .color-presets {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .preset-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: all var(--transition);
+      padding: 0;
+      position: relative;
+    }
+
+    .preset-btn:hover,
+    .preset-btn.active {
+      transform: scale(1.25);
+      border-color: var(--warm-brown);
+      box-shadow: 0 2px 8px var(--shadow);
+    }
+
+    /* ── Buttons ── */
+    .btn-primary {
+      width: 100%;
+      padding: 14px 24px;
+      border: none;
+      border-radius: var(--radius-xl);
+      background: linear-gradient(135deg, var(--dusty-rose) 0%, var(--mauve) 100%);
+      color: #fff;
+      font-family: 'Noto Serif SC', serif;
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: all var(--transition);
+      box-shadow: 0 4px 20px rgba(176,139,139,0.35);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 50%);
+      opacity: 0;
+      transition: opacity var(--transition);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(176,139,139,0.45);
+    }
+
+    .btn-primary:hover::before {
+      opacity: 1;
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-secondary {
+      width: 100%;
+      padding: 12px 24px;
+      border: 1.5px solid var(--blush);
+      border-radius: var(--radius-xl);
+      background: rgba(255,255,255,0.7);
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--dusty-rose);
+      color: var(--warm-brown);
+      background: rgba(232,213,204,0.25);
+      transform: translateY(-1px);
+    }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--deep-plum);
+      color: rgba(255,255,255,0.95);
+      padding: 12px 28px;
+      border-radius: var(--radius-xl);
+      font-size: 14px;
+      letter-spacing: 0.5px;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 9999;
+      box-shadow: 0 8px 30px rgba(74,48,64,0.3);
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ── Info Tags ── */
+    .info-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+
+    .tag {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      font-weight: 500;
+    }
+
+    .tag-rose { background: rgba(201,169,154,0.2); color: var(--warm-brown); }
+    .tag-sage { background: rgba(156,170,142,0.2); color: #5c7050; }
+    .tag-lavender { background: rgba(196,189,214,0.2); color: #6b5e80; }
+
+    /* ── Divider ── */
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--blush), transparent);
+      margin: 4px 0;
+    }
+
+    /* ── Footer ── */
+    footer {
+      position: relative;
+      z-index: 5;
+      text-align: center;
+      padding: 20px 24px 40px;
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+    }
+
+    footer span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ── Petal Decorations ── */
+    .petal {
+      position: fixed;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.12;
+      font-size: 24px;
+      animation: petaldrift 20s ease-in-out infinite;
+    }
+
+    .petal:nth-child(1) { top: 8%; left: 3%; animation-delay: 0s; }
+    .petal:nth-child(2) { top: 20%; right: 5%; animation-delay: -5s; animation-duration: 25s; }
+    .petal:nth-child(3) { top: 65%; left: 2%; animation-delay: -10s; animation-duration: 18s; }
+    .petal:nth-child(4) { bottom: 15%; right: 3%; animation-delay: -15s; animation-duration: 22s; }
+    .petal:nth-child(5) { top: 45%; right: 6%; animation-delay: -8s; animation-duration: 28s; font-size: 18px; }
+
+    @keyframes petaldrift {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      33% { transform: translateY(-20px) rotate(10deg); }
+      66% { transform: translateY(10px) rotate(-8deg); }
+    }
+
+    /* ── Loading Spinner ── */
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ── Image Info Bar ── */
+    .image-info-bar {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 14px;
+      background: rgba(201,169,154,0.15);
+      border-radius: var(--radius-sm);
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .image-info-bar.visible {
+      display: flex;
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--cream); }
+    ::-webkit-scrollbar-thumb { background: var(--blush); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--dusty-rose); }
+  </style>
+</head>
+<body>
+
+  <!-- Petal decorations -->
+  <span class="petal">🌸</span>
+  <span class="petal">🌷</span>
+  <span class="petal">✿</span>
+  <span class="petal">🌺</span>
+  <span class="petal">❀</span>
+
+  <!-- Privacy Banner -->
+  <div class="privacy-banner">
+    <span>🛡️ 隐私保护：图片仅在本地处理，不会上传至任何服务器，数据100%安全</span>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <span class="header-ornament">🌸</span>
+    <h1>女书<em>水印</em>工具</h1>
+    <p class="header-sub">为清醒的女性 · 守护每一份阅读痕迹</p>
+    <div class="header-divider"></div>
+    <div class="info-tags" style="justify-content:center;margin-top:16px;">
+      <span class="tag tag-rose">📖 读书打卡专用</span>
+      <span class="tag tag-sage">🔒 纯本地处理</span>
+      <span class="tag tag-lavender">✨ 无需注册登录</span>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main>
+    <!-- Left: Upload + Preview -->
+    <div style="display:flex;flex-direction:column;gap:20px;">
+      <!-- Upload Card -->
+      <div class="card">
+        <div class="card-title">📂 上传图片</div>
+        <div class="upload-zone" id="uploadZone">
+          <span class="upload-icon">🖼️</span>
+          <p class="upload-text">拖拽图片至此 / 点击选择</p>
+          <p class="upload-hint">支持 JPG · PNG · WEBP · GIF · BMP</p>
+        </div>
+        <input type="file" id="fileInput" accept="image/*" />
+        <div class="image-info-bar" id="imageInfoBar">
+          <span id="imageInfoName">—</span>
+          <span id="imageInfoSize">—</span>
+        </div>
+      </div>
+
+      <!-- Preview Card -->
+      <div class="card">
+        <div class="card-title">👁️ 实时预览</div>
+        <div class="preview-wrapper" id="previewWrapper">
+          <div class="preview-placeholder" id="previewPlaceholder">
+            <span class="ph-icon">🌸</span>
+            上传图片后在此预览水印效果
+          </div>
+          <canvas id="previewCanvas" style="display:none;"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Controls -->
+    <div class="controls-col">
+      <!-- Watermark Text -->
+      <div class="card">
+        <div class="card-title">✍️ 水印内容</div>
+        <div class="form-group">
+          <label for="wmText">水印文字</label>
+          <textarea id="wmText" placeholder="输入水印文字…">仅供女子清醒读书会打卡使用，他用无效</textarea>
+        </div>
+      </div>
+
+      <!-- Style Controls -->
+      <div class="card">
+        <div class="card-title">🎨 样式调整</div>
+
+        <div class="form-group">
+          <label for="wmFontSize">字体大小 <span class="slider-value" id="fontSizeVal">18</span>px</label>
+          <div class="slider-row">
+            <input type="range" id="wmFontSize" min="10" max="60" value="18" />
+          </div>
+        </div>
+
+        <div class="section-divider" style="margin:14px 0;"></div>
+
+        <div class="form-group">
+          <label>水印颜色</label>
+          <div class="color-row">
+            <div class="color-picker-wrapper" title="自定义颜色">
+              <div class="color-swatch" id="colorSwatch" style="background:#b08b8b;"></div>
+              <input type="color" id="wmColor" value="#b08b8b" />
+            </div>
+            <div class="color-presets" id="colorPresets">
+              <button class="preset-btn active" style="background:#b08b8b;" data-color="#b08b8b" title="莫兰迪玫瑰"></button>
+              <button class="preset-btn" style="background:#a0a0c0;" data-color="#a0a0c0" title="莫兰迪紫蓝"></button>
+              <button class="preset-btn" style="background:#9caa8e;" data-color="#9caa8e" title="莫兰迪茶绿"></button>
+              <button class="preset-btn" style="background:#c9a86c;" data-color="#c9a86c" title="古金色"></button>
+              <button class="preset-btn" style="background:#4a3040;" data-color="#4a3040" title="深李子色"></button>
+              <button class="preset-btn" style="background:#ffffff;" data-color="#ffffff" title="纯白" style="border:1px solid #ddd;"></button>
+              <button class="preset-btn" style="background:#333333;" data-color="#333333" title="深炭黑"></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-divider" style="margin:14px 0;"></div>
+
+        <div class="form-group">
+          <label for="wmOpacity">透明度 <span class="slider-value" id="opacityVal">35</span>%</label>
+          <div class="slider-row">
+            <input type="range" id="wmOpacity" min="5" max="100" value="35" />
+          </div>
+        </div>
+
+        <div class="section-divider" style="margin:14px 0;"></div>
+
+        <div class="form-group">
+          <label for="wmSpacing">水印间距 <span class="slider-value" id="spacingVal">1.5</span>x</label>
+          <div class="slider-row">
+            <input type="range" id="wmSpacing" min="10" max="30" value="15" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="card">
+        <div class="card-title">⬇️ 导出图片</div>
+        <button class="btn-primary" id="downloadBtn" disabled>
+          💾 &nbsp;下载带水印图片
+        </button>
+        <div style="height:10px;"></div>
+        <button class="btn-secondary" id="resetBtn">
+          🔄 &nbsp;重新上传
+        </button>
+      </div>
+
+      <!-- Tips -->
+      <div class="card" style="background:rgba(201,169,154,0.12);">
+        <div class="card-title">💡 使用贴士</div>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;">
+          <li style="font-size:12.5px;color:var(--text-secondary);display:flex;gap:8px;align-items:flex-start;">
+            <span>🌸</span><span>水印以 -30° 倾斜全屏铺满，有效防止局部裁剪去除水印</span>
+          </li>
+          <li style="font-size:12.5px;color:var(--text-secondary);display:flex;gap:8px;align-items:flex-start;">
+            <span>🔒</span><span>所有处理均在您的浏览器本地完成，图片不会离开您的设备</span>
+          </li>
+          <li style="font-size:12.5px;color:var(--text-secondary);display:flex;gap:8px;align-items:flex-start;">
+            <span>🎨</span><span>建议透明度 25-45%，既清晰可见又不遮挡原文内容</span>
+          </li>
+          <li style="font-size:12.5px;color:var(--text-secondary);display:flex;gap:8px;align-items:flex-start;">
+            <span>💾</span><span>导出为原始尺寸高清 PNG，保留完整图片质量</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <span>🌸 女书水印工具 · 为清醒的女性而建 · 纯本地处理 无服务器 永远安全</span>
+  </footer>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ─── State ───────────────────────────────────────────────────────────
+    let originalImage = null;
+    let renderTimer = null;
+
+    // ─── DOM References ───────────────────────────────────────────────────
+    const uploadZone      = document.getElementById('uploadZone');
+    const fileInput       = document.getElementById('fileInput');
+    const previewCanvas   = document.getElementById('previewCanvas');
+    const previewWrapper  = document.getElementById('previewWrapper');
+    const previewPlaceholder = document.getElementById('previewPlaceholder');
+    const imageInfoBar    = document.getElementById('imageInfoBar');
+    const imageInfoName   = document.getElementById('imageInfoName');
+    const imageInfoSize   = document.getElementById('imageInfoSize');
+    const downloadBtn     = document.getElementById('downloadBtn');
+    const resetBtn        = document.getElementById('resetBtn');
+    const wmText          = document.getElementById('wmText');
+    const wmFontSize      = document.getElementById('wmFontSize');
+    const wmColor         = document.getElementById('wmColor');
+    const wmOpacity       = document.getElementById('wmOpacity');
+    const wmSpacing       = document.getElementById('wmSpacing');
+    const fontSizeVal     = document.getElementById('fontSizeVal');
+    const opacityVal      = document.getElementById('opacityVal');
+    const spacingVal      = document.getElementById('spacingVal');
+    const colorSwatch     = document.getElementById('colorSwatch');
+    const colorPresets    = document.getElementById('colorPresets');
+    const toast           = document.getElementById('toast');
+
+    // ─── Upload Zone Events ───────────────────────────────────────────────
+    uploadZone.addEventListener('click', () => fileInput.click());
+
+    uploadZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadZone.classList.add('dragover');
+    });
+
+    uploadZone.addEventListener('dragleave', () => {
+      uploadZone.classList.remove('dragover');
+    });
+
+    uploadZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadZone.classList.remove('dragover');
+      const files = e.dataTransfer.files;
+      if (files && files[0]) loadImageFile(files[0]);
+    });
+
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files[0]) loadImageFile(fileInput.files[0]);
+    });
+
+    // ─── Load Image ───────────────────────────────────────────────────────
+    function loadImageFile(file) {
+      if (!file.type.startsWith('image/')) {
+        showToast('⚠️ 请上传图片文件');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          originalImage = img;
+          previewPlaceholder.style.display = 'none';
+          previewCanvas.style.display = 'block';
+          downloadBtn.disabled = false;
+
+          // Info bar
+          imageInfoBar.classList.add('visible');
+          imageInfoName.textContent = file.name.length > 22 ? file.name.substring(0, 20) + '…' : file.name;
+          imageInfoSize.textContent = formatBytes(file.size);
+
+          scheduleRender();
+          showToast('🌸 图片加载成功！');
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function formatBytes(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / 1024 / 1024).toFixed(2) + ' MB';
+    }
+
+    // ─── Watermark Render ─────────────────────────────────────────────────
+    function scheduleRender() {
+      clearTimeout(renderTimer);
+      renderTimer = setTimeout(renderWatermark, 60);
+    }
+
+    function renderWatermark(targetCanvas) {
+      if (!originalImage) return;
+
+      const canvas = targetCanvas || previewCanvas;
+      const ctx = canvas.getContext('2d');
+
+      // Set canvas size to original image size
+      canvas.width  = originalImage.naturalWidth;
+      canvas.height = originalImage.naturalHeight;
+
+      // Draw original image
+      ctx.drawImage(originalImage, 0, 0);
+
+      // ── Watermark Parameters ──
+      const text    = wmText.value.trim() || '仅供女子清醒读书会打卡使用，他用无效';
+      const size    = parseInt(wmFontSize.value);
+      const opacity = parseInt(wmOpacity.value) / 100;
+      const spacing = parseInt(wmSpacing.value) / 10; // 1.0 – 3.0
+      const color   = wmColor.value;
+      const angle   = -30 * (Math.PI / 180);
+
+      // ── Build font ──
+      ctx.save();
+      ctx.font = `${size}px "Noto Serif SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", serif`;
+      ctx.textBaseline  = 'middle';
+      ctx.textAlign     = 'left';
+
+      // Measure single text width
+      const metrics   = ctx.measureText(text);
+      const textW     = metrics.width;
+      const textH     = size;
+
+      // ── Tiling with full-canvas coverage ──
+      // Step sizes in the rotated space to ensure full coverage
+      const stepX = (textW + size * 3) * spacing;
+      const stepY = (textH + size * 2) * spacing;
+
+      // Determine how far we need to tile (cover diagonal of canvas)
+      const diagonal = Math.sqrt(canvas.width ** 2 + canvas.height ** 2);
+      const countX   = Math.ceil(diagonal / stepX) + 2;
+      const countY   = Math.ceil(diagonal / stepY) + 2;
+
+      // Parse hex color -> rgba
+      const [r, g, b] = hexToRgb(color);
+
+      ctx.globalAlpha = opacity;
+      ctx.fillStyle   = `rgb(${r},${g},${b})`;
+
+      // Center-based tiling: start from canvas center, tile in all directions
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+
+      ctx.translate(cx, cy);
+      ctx.rotate(angle);
+
+      for (let xi = -countX; xi <= countX; xi++) {
+        for (let yi = -countY; yi <= countY; yi++) {
+          const tx = xi * stepX;
+          const ty = yi * stepY;
+
+          // Alternate rows for denser, non-linear-aligned look
+          const offsetX = (yi % 2 !== 0) ? stepX / 2 : 0;
+
+          ctx.fillText(text, tx + offsetX - textW / 2, ty);
+        }
+      }
+
+      ctx.restore();
+    }
+
+    function hexToRgb(hex) {
+      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result
+        ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)]
+        : [176, 139, 139];
+    }
+
+    // ─── Control Events ───────────────────────────────────────────────────
+    wmText.addEventListener('input', scheduleRender);
+
+    wmFontSize.addEventListener('input', () => {
+      fontSizeVal.textContent = wmFontSize.value;
+      scheduleRender();
+    });
+
+    wmOpacity.addEventListener('input', () => {
+      opacityVal.textContent = wmOpacity.value;
+      scheduleRender();
+    });
+
+    wmSpacing.addEventListener('input', () => {
+      spacingVal.textContent = (parseInt(wmSpacing.value) / 10).toFixed(1);
+      scheduleRender();
+    });
+
+    wmColor.addEventListener('input', () => {
+      colorSwatch.style.background = wmColor.value;
+      clearActivePresets();
+      scheduleRender();
+    });
+
+    // Color presets
+    colorPresets.querySelectorAll('.preset-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const color = btn.dataset.color;
+        wmColor.value   = color;
+        colorSwatch.style.background = color;
+        clearActivePresets();
+        btn.classList.add('active');
+        scheduleRender();
+      });
+    });
+
+    function clearActivePresets() {
+      colorPresets.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+    }
+
+    // ─── Download ─────────────────────────────────────────────────────────
+    downloadBtn.addEventListener('click', () => {
+      if (!originalImage) return;
+
+      // Show loading state
+      const originalText = downloadBtn.innerHTML;
+      downloadBtn.disabled = true;
+      downloadBtn.innerHTML = '<span class="spinner"></span>生成中…';
+
+      // Use a fresh high-res canvas
+      const exportCanvas = document.createElement('canvas');
+      renderWatermark(exportCanvas);
+
+      // Small delay to allow spinner to show
+      setTimeout(() => {
+        const link      = document.createElement('a');
+        const timestamp = new Date().toISOString().slice(0, 19).replace(/[:\-T]/g, '').replace(/^(\d{8})(\d{6})$/, '$1_$2');
+        link.download   = `watermarked_${timestamp}.png`;
+        link.href       = exportCanvas.toDataURL('image/png', 1.0);
+        link.click();
+
+        downloadBtn.disabled  = false;
+        downloadBtn.innerHTML = originalText;
+        showToast('✅ 图片已保存到本地！');
+      }, 120);
+    });
+
+    // ─── Reset ────────────────────────────────────────────────────────────
+    resetBtn.addEventListener('click', () => {
+      originalImage = null;
+      fileInput.value = '';
+      previewCanvas.style.display  = 'none';
+      previewPlaceholder.style.display = '';
+      imageInfoBar.classList.remove('visible');
+      downloadBtn.disabled = true;
+
+      const ctx = previewCanvas.getContext('2d');
+      ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+
+      showToast('🔄 已清空，请重新上传图片');
+    });
+
+    // ─── Toast ────────────────────────────────────────────────────────────
+    let toastTimer;
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 2600);
+    }
+
+    // ─── Init slider display values ───────────────────────────────────────
+    fontSizeVal.textContent = wmFontSize.value;
+    opacityVal.textContent  = wmOpacity.value;
+    spacingVal.textContent  = (parseInt(wmSpacing.value) / 10).toFixed(1);
+    colorSwatch.style.background = wmColor.value;
+  </script>
+</body>
+</html>
